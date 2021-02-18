@@ -3,13 +3,16 @@ package com.nhan.demoreact.core.controller;
 import com.nhan.demoreact.core.entity.Course;
 import com.nhan.demoreact.core.service.CourseHardCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Hashtable;
 import java.util.List;
 
-@CrossOrigin(origins = {"http://localhost:8081"})
+@CrossOrigin(origins = {"http://localhost:8081","http://192.168.232.1:8081"})
 @RestController
 public class CourseResourceController {
 
@@ -28,6 +31,19 @@ public class CourseResourceController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/ins/{username}/course/{id}")
+    public ResponseEntity<Course> updateCourse(@PathVariable String username, @PathVariable long id, @RequestBody Course course){
+        Course courseUpdated = courseHardCodeService.createOrUpdate(course);
+        return new ResponseEntity<Course>(courseUpdated, HttpStatus.OK);
+    }
+
+    @PostMapping("/ins/{username}/course")
+    public ResponseEntity<Void> createCourse(@PathVariable String username, @RequestBody Course course){
+        Course createdCourse = courseHardCodeService.createOrUpdate(course);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(createdCourse.getId()).toUri();
+        return ResponseEntity.created(uri).build();
     }
 
     @GetMapping("/ins/{username}/course/{id}")

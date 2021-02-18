@@ -25,6 +25,16 @@ public class CourseHardCodeService {
         return courses.get(id);
     }
 
+    public Course createOrUpdate(Course course){
+        if(course.getId() == -1 || course.getId() == 0){
+            course.setId(++idCounter);
+            courses.put(idCounter, course);
+        } else {
+            courses.replace(course.getId(), course);
+        }
+        return course;
+    }
+
     public Course deleteById(long id){
         Course course = findById(id);
         if (course == null) return null;
