@@ -29,4 +29,9 @@ public class CourseResourceController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/ins/{username}/course/{id}")
+    public Course getCourse(@PathVariable String username, @PathVariable long id){
+        return courseHardCodeService.findById(id);
+    }
 }

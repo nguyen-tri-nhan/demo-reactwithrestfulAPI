@@ -21,7 +21,7 @@ public class CourseHardCodeService {
         return new ArrayList<Course>(courses.values());
     }
 
-    private Course findById(long id){
+    public Course findById(long id){
         return courses.get(id);
     }
 

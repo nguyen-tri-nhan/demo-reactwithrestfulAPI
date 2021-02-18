@@ -13,6 +13,7 @@ class ListCoursesComponent extends Component {
             message: null
         }
         this.refreshCourses = this.refreshCourses.bind(this)
+        this.addCourseClicked = this.addCourseClicked.bind(this)
     }
 
     componentDidMount() {
@@ -29,13 +30,22 @@ class ListCoursesComponent extends Component {
             )
     }
 
-    deleteCourseClicked(id){
+    deleteCourseClicked(id) {
         CourseDataService.deleteCourse(INSTRUCTOR, id).then(
             response => {
-                this.setState({ message:`Delete of course ${id} Successful` });
+                this.setState({ message: `Delete of course ${id} Successful` });
                 this.refreshCourses()
             }
         )
+    }
+
+    updateCourseClicked(id) {
+        console.log('update ' + id);
+        this.props.history.push(`/course/${id}`)
+    }
+
+    addCourseClicked(){
+        this.props.history.push(`course/-1`);
     }
 
     render() {
@@ -49,21 +59,27 @@ class ListCoursesComponent extends Component {
                             <tr>
                                 <th>Id</th>
                                 <th>Description</th>
+                                <th>Delete</th>
+                                <th>Update</th>
                             </tr>
                         </thead>
                         <tbody>
                             {
                                 this.state.courses.map(
                                     courses =>
-                                    <tr key={courses.id} >
-                                        <td>{courses.id}</td>
-                                        <td>{courses.description}</td>
-                                        <td><button className="btn btn-warning" onClick={() => this.deleteCourseClicked(courses.id)}>Delete</button></td>
-                                    </tr>
+                                        <tr key={courses.id} >
+                                            <td>{courses.id}</td>
+                                            <td>{courses.description}</td>
+                                            <td><button className="btn btn-warning" onClick={() => this.deleteCourseClicked(courses.id)}>Delete</button></td>
+                                            <td><button className="btn btn-success" onClick={() => this.updateCourseClicked(courses.id)}>Update</button></td>
+                                        </tr>
                                 )
                             }
                         </tbody>
                     </table>
+                    <div className="row">
+                        <button className="btn btn-success" onClick={this.addCourseClicked}>Add</button>
+                    </div>
                 </div>
             </div>
         )
