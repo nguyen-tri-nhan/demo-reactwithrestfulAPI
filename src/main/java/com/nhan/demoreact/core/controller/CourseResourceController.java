@@ -21,7 +21,7 @@ public class CourseResourceController {
         return courseHardCodeService.findAll();
     }
 
-    @DeleteMapping("/ins/{username}/course/delete/id")
+    @DeleteMapping("/ins/{username}/courses/delete/{id}")
     public ResponseEntity<Void> deleteCourse(@PathVariable String username, @PathVariable long id){
         Course course = courseHardCodeService.deleteById(id);
         if (course != null){
