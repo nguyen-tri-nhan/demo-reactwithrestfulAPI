@@ -1,25 +1,24 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import CourseDataService from "../service/CourseDataService";
-import {Field, Form, Formik, ErrorMessage} from "formik";
+import { Field, Form, Formik, ErrorMessage } from "formik";
 
 const INSTRUCTOR = "nguyentrinhan"
 
 
-export const CourseComponent = props => {
+export const CourseComponent = (props) => {
     const [state, setState] = useState({
         id: props.match.params.id,
         description: ''
     })
 
-    function refreshCourse() {
-        if (state.id === -1) {
+    const refreshCourse = () => {
+        if (state.id == -1) {
             return
         }
         CourseDataService.retrieveCourse(INSTRUCTOR, state.id)
             .then(response => setState({
-                id: response.data?.id,
+                id: response.data.id,
                 description: response.data.description
-
             }))
     }
 
@@ -27,7 +26,7 @@ export const CourseComponent = props => {
     useEffect(
         () => {
             refreshCourse()
-        }, [refreshCourse]
+        }
     )
 
     const onSubmit = (values) => {
@@ -58,13 +57,13 @@ export const CourseComponent = props => {
         return errors
     }
 
-    let {id, description} = state
+    let { id, description } = state
     return (
         <div>
             <h3>Course</h3>
             <div className="container">
                 <Formik
-                    initialValues={{id, description}}
+                    initialValues={{ id, description }}
                     onSubmit={onSubmit}
                     validateOnChange={false}
                     validateOnBlur={false}
@@ -75,14 +74,14 @@ export const CourseComponent = props => {
                         () => (
                             <Form>
                                 <ErrorMessage name="description" component="div"
-                                              className="alert alert-warning"/>
+                                    className="alert alert-warning" />
                                 <fieldset className="form-group">
                                     <label>Id</label>
-                                    <Field className="form-control" type="text" name="id" disabled/>
+                                    <Field className="form-control" type="text" name="id" disabled />
                                 </fieldset>
                                 <fieldset className="form-group">
                                     <label>Description</label>
-                                    <Field className="form-control" type="text" name="description"/>
+                                    <Field className="form-control" type="text" name="description" />
                                 </fieldset>
                                 <button className="btn btn-success" type="submit">Save</button>
                             </Form>
