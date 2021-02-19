@@ -2,25 +2,30 @@ import React, { useEffect, useState } from "react";
 import CourseDataService from "../service/CourseDataService";
 import { Field, Form, Formik, ErrorMessage } from "formik";
 
-
 const INSTRUCTOR = "nguyentrinhan"
+
 
 export const CourseComponent = (props) => {
     const [state, setState] = useState({
         id: props.match.params.id,
-        description:''
+        description: ''
     })
+
+    const refreshCourse = () => {
+        if (state.id == -1) {
+            return
+        }
+        CourseDataService.retrieveCourse(INSTRUCTOR, state.id)
+            .then(response => setState({
+                id: response.data.id,
+                description: response.data.description
+            }))
+    }
+
 
     useEffect(
         () => {
-            if (state.id == -1) {
-                return
-            }
-            CourseDataService.retrieveCourse(INSTRUCTOR, state.id)
-                .then(response => setState({
-                    id: response.data.id,
-                    description: response.data.description
-                }))
+            refreshCourse()
         }
     )
 
@@ -31,7 +36,7 @@ export const CourseComponent = (props) => {
             id: state.id,
             description: values.description
         }
-        if (state.id === -1){
+        if (state.id === -1) {
             CourseDataService.createCourse(username, course).then(
                 () => props.history.push('/courses')
             )
@@ -41,19 +46,18 @@ export const CourseComponent = (props) => {
             )
         }
     }
-    
-    const validate = (values) => {
+
+    const validate = values => {
         let errors = {}
         if (!values.description) {
             errors.description = 'Enter a Description'
         } else if (values.description.length < 5) {
-            errors.description = 'Enter atleast 5 Characters in Description'
+            errors.description = 'Enter at least 5 Characters in Description'
         }
-
         return errors
     }
 
-    let {id, description} = state
+    let { id, description } = state
     return (
         <div>
             <h3>Course</h3>

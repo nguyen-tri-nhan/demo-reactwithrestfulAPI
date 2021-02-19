@@ -46,7 +46,7 @@ export const ListCoursesComponent = (props) => {
     return (
         <div className="container">
             <h3>All Courses</h3>
-            {state.message && <div class="alert alert-success">{state.message}</div>}
+            {state.message && <div className="alert alert-success">{state.message}</div>}
             <div className="container">
                 <table className="table">
                     <thead>
