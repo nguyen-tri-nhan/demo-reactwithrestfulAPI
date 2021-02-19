@@ -1,27 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import CourseDataService from "../service/CourseDataService";
-import { Field, Form, Formik, ErrorMessage } from "formik";
-
+import {Field, Form, Formik, ErrorMessage} from "formik";
 
 const INSTRUCTOR = "nguyentrinhan"
 
-export const CourseComponent = (props) => {
+
+export const CourseComponent = props => {
     const [state, setState] = useState({
         id: props.match.params.id,
-        description:''
+        description: ''
     })
+
+    function refreshCourse() {
+        if (state.id === -1) {
+            return
+        }
+        CourseDataService.retrieveCourse(INSTRUCTOR, state.id)
+            .then(response => setState({
+                id: response.data?.id,
+                description: response.data.description
+
+            }))
+    }
+
 
     useEffect(
         () => {
-            if (state.id == -1) {
-                return
-            }
-            CourseDataService.retrieveCourse(INSTRUCTOR, state.id)
-                .then(response => setState({
-                    id: response.data.id,
-                    description: response.data.description
-                }))
-        }
+            refreshCourse()
+        }, [refreshCourse]
     )
 
     const onSubmit = (values) => {
@@ -31,7 +37,7 @@ export const CourseComponent = (props) => {
             id: state.id,
             description: values.description
         }
-        if (state.id === -1){
+        if (state.id === -1) {
             CourseDataService.createCourse(username, course).then(
                 () => props.history.push('/courses')
             )
@@ -41,15 +47,14 @@ export const CourseComponent = (props) => {
             )
         }
     }
-    
-    const validate = (values) => {
+
+    const validate = values => {
         let errors = {}
         if (!values.description) {
             errors.description = 'Enter a Description'
         } else if (values.description.length < 5) {
-            errors.description = 'Enter atleast 5 Characters in Description'
+            errors.description = 'Enter at least 5 Characters in Description'
         }
-
         return errors
     }
 
@@ -59,7 +64,7 @@ export const CourseComponent = (props) => {
             <h3>Course</h3>
             <div className="container">
                 <Formik
-                    initialValues={{ id, description }}
+                    initialValues={{id, description}}
                     onSubmit={onSubmit}
                     validateOnChange={false}
                     validateOnBlur={false}
@@ -70,14 +75,14 @@ export const CourseComponent = (props) => {
                         () => (
                             <Form>
                                 <ErrorMessage name="description" component="div"
-                                    className="alert alert-warning" />
+                                              className="alert alert-warning"/>
                                 <fieldset className="form-group">
                                     <label>Id</label>
-                                    <Field className="form-control" type="text" name="id" disabled />
+                                    <Field className="form-control" type="text" name="id" disabled/>
                                 </fieldset>
                                 <fieldset className="form-group">
                                     <label>Description</label>
-                                    <Field className="form-control" type="text" name="description" />
+                                    <Field className="form-control" type="text" name="description"/>
                                 </fieldset>
                                 <button className="btn btn-success" type="submit">Save</button>
                             </Form>
