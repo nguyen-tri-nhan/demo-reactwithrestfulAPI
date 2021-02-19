@@ -1,47 +1,48 @@
-import { Field, Form, Formik, ErrorMessage } from "formik";
-import { Component } from "react";
+import React, { useEffect, useState } from "react";
 import CourseDataService from "../service/CourseDataService";
+import { Field, Form, Formik, ErrorMessage } from "formik";
 
-const INSTRUCTOR = 'nguyentrinhan'
-class CourseComponent extends Component {
-    constructor(props) {
-        super(props)
 
-        this.state = {
-            id: this.props.match.params.id,
-            description: ''
+const INSTRUCTOR = "nguyentrinhan"
+
+export const CourseComponent = (props) => {
+    const [state, setState] = useState({
+        id: props.match.params.id,
+        description:''
+    })
+
+    useEffect(
+        () => {
+            if (state.id == -1) {
+                return
+            }
+            CourseDataService.retrieveCourse(INSTRUCTOR, state.id)
+                .then(response => setState({
+                    id: response.data.id,
+                    description: response.data.description
+                }))
         }
-        this.onSubmit = this.onSubmit.bind(this)
-        this.validate = this.validate.bind(this)
+    )
 
-    }
-    componentDidMount() {
-        console.log(this.state.id)
-        if (this.state.id == -1) {
-            return
-        }
-        CourseDataService.retrieveCourse(INSTRUCTOR, this.state.id)
-            .then(response => this.setState({
-                description: response.data.description
-            }))
-    }
-    onSubmit(values) {
+    const onSubmit = (values) => {
+        console.log("submit")
         let username = INSTRUCTOR
         let course = {
-            id: this.state.id,
+            id: state.id,
             description: values.description
         }
-        if (this.state.id === -1){
+        if (state.id === -1){
             CourseDataService.createCourse(username, course).then(
-                () => this.props.history.push('/courses')
+                () => props.history.push('/courses')
             )
         } else {
-            CourseDataService.updateCourse(username, this.state.id, course).then(
-                () => this.props.history.push('/courses')
+            CourseDataService.updateCourse(username, id, course).then(
+                () => props.history.push('/courses')
             )
         }
     }
-    validate(values) {
+    
+    const validate = (values) => {
         let errors = {}
         if (!values.description) {
             errors.description = 'Enter a Description'
@@ -51,41 +52,39 @@ class CourseComponent extends Component {
 
         return errors
     }
-    render() {
-        let { id, description } = this.state
-        return (
-            <div>
-                <h3>Course</h3>
-                <div className="container">
-                    <Formik
-                        initialValues={{ id, description }}
-                        onSubmit={this.onSubmit}
-                        validateOnChange={false}
-                        validateOnBlur={false}
-                        validate={this.validate}
-                        enableReinitialize={true}
-                    >
-                        {
-                            (props) => (
-                                <Form>
-                                    <ErrorMessage name="description" component="div"
-                                        className="alert alert-warning" />
-                                    <fieldset className="form-group">
-                                        <label>Id</label>
-                                        <Field className="form-control" type="text" name="id" disabled />
-                                    </fieldset>
-                                    <fieldset className="form-group">
-                                        <label>Description</label>
-                                        <Field className="form-control" type="text" name="description" />
-                                    </fieldset>
-                                    <button className="btn btn-success" type="submit">Save</button>
-                                </Form>
-                            )
-                        }
-                    </Formik>
-                </div>
+
+    let {id, description} = state
+    return (
+        <div>
+            <h3>Course</h3>
+            <div className="container">
+                <Formik
+                    initialValues={{ id, description }}
+                    onSubmit={onSubmit}
+                    validateOnChange={false}
+                    validateOnBlur={false}
+                    validate={validate}
+                    enableReinitialize={true}
+                >
+                    {
+                        () => (
+                            <Form>
+                                <ErrorMessage name="description" component="div"
+                                    className="alert alert-warning" />
+                                <fieldset className="form-group">
+                                    <label>Id</label>
+                                    <Field className="form-control" type="text" name="id" disabled />
+                                </fieldset>
+                                <fieldset className="form-group">
+                                    <label>Description</label>
+                                    <Field className="form-control" type="text" name="description" />
+                                </fieldset>
+                                <button className="btn btn-success" type="submit">Save</button>
+                            </Form>
+                        )
+                    }
+                </Formik>
             </div>
-        )
-    }
+        </div>
+    )
 }
-export default CourseComponent

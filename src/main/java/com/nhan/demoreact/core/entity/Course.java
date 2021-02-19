@@ -1,10 +1,19 @@
 package com.nhan.demoreact.core.entity;
 
-import lombok.*;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "courses")
 public class Course {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(name = "username")
     private String username;
+
+    @Column(name = "description")
     private String description;
 
     public Course() {
